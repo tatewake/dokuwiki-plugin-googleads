@@ -1,0 +1,17 @@
+====== GoogleAds ======
+
+This plugin allows you to include [[wp>Adsense|Google Adsense]] advertisings into your wiki page.
+
+To use it, you'll have to insert the following code into your template:
+
+<code php>
+<?php
+if (file_exists(DOKU_PLUGIN.'googleads/code.php')) include_once(DOKU_PLUGIN.'googleads/code.php');
+if (function_exists('gads_code')) gads_code();
+?>
+</code>
+
+**Note**: Inserting the code above is **required**, not optional.
+
+Please set the following options...
+
