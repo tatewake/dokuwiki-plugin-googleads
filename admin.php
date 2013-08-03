@@ -91,7 +91,7 @@ var $googleads = '';
 			gads_save();
 		}
 
-		print $this->plugin_locale_xhtml('intro');
+		print $this->locale_xhtml('intro');
 
 		ptln("<form action=\"".wl($ID)."\" method=\"post\">");
 		ptln('  <input type="hidden" name="do"   value="admin" />');
