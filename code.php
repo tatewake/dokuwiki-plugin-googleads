@@ -61,8 +61,8 @@ function gads_code()
         if ($gads_settings['code'])
         {
         		if ($GLOBALS['ACT'] != 'show') return;
-                if ($gads_settings['dontcountadmin'] && $_SERVER['REMOTE_USER'] == $conf['superuser']) return;
-                if ($gads_settings['dontcountusers'] && $_SERVER['REMOTE_USER']) return;
+                if ($gads_settings['dontcountadmin'] && $INFO['isadmin']) return;
+                if ($gads_settings['dontcountusers'] && $INFO['client']) return;
                 ptln(stripslashes($gads_settings['code']));
                 
         }
