@@ -4,7 +4,7 @@
  * Google Ads for DokuWiki
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * @author     Bernd Zeimetz <bernd@bzed.de>, based on code by Terence J. Grant<tjgrant@tatewake.com>
+ * @author     Terence J. Grant<tjgrant@tatewake.com>
  */
 
 if (!defined('DOKU_INC')) define('DOKU_INC', realpath(dirname(__FILE__) . '/../../') . '/');
@@ -28,40 +28,15 @@ class admin_plugin_googleads extends DokuWiki_Admin_Plugin
 	function admin_plugin_googleads() {
 		$this->setupLocale();
 	}
-	
-	/**
-	 * return some info
-	 */
-	function getInfo() {
-		return array(
-			'author' => 'Bernd Zeimetz',
-			'email' => 'bernd@bzed.de',
-			'date' => '2007-03-14',
-			'name' => 'Google Adsense Plugin',
-			'desc' => 'Plugin to embed your Google Adsense code in your site.',
-			'url' => 'http://bzed.de/code/dokuwiki/googleads',
-		);
-	}
-	
-	/**
-	 * return sort order for position in admin menu
-	 */
-	function getMenuSort() {
-		return 999;
-	}
-	
+		
 	/**
 	 * handle user request
 	 */
 	function handle() {
 		$this->state = 0;
 		
-		if (!isset($_REQUEST['cmd'])) return;
-		
-		// first time - nothing to do
-		
-		if (!is_array($_REQUEST['cmd'])) return;
-		
+		if (!isset($_REQUEST['cmd']) || !is_array($_REQUEST['cmd'])) return;
+
 		$this->googleads = $_REQUEST['googleads'];
 		
 		if (is_array($this->googleads)) {
@@ -77,33 +52,74 @@ class admin_plugin_googleads extends DokuWiki_Admin_Plugin
 		global $gads_loaded, $gads_settings;
 		
 		if ($this->state != 0)
-		
-		//If we are to save now...
 		{
-			$gads_settings['code'] = addslashes($this->googleads['code']);
-			$gads_settings['dontcountadmin'] = $this->googleads['dontcountadmin'] == 'on' ? 'checked' : '';
-			$gads_settings['dontcountmanager'] = $this->googleads['dontcountmanager'] == 'on' ? 'checked' : '';
-			$gads_settings['dontcountusers'] = $this->googleads['dontcountusers'] == 'on' ? 'checked' : '';
+			$gads_settings['code'] = $this->googleads != null && array_key_exists('code', $this->googleads) ? addslashes($this->googleads['code']) : '';
+			$gads_settings['dontcountadmin'] = $this->getIsValueOn($this->googleads, 'dontcountadmin') ? 1 : 0;
+			$gads_settings['dontcountmanager'] = $this->getIsValueOn($this->googleads, 'dontcountmanager') ? 1 : 0;
+			$gads_settings['dontcountusers'] = $this->getIsValueOn($this->googleads, 'dontcountusers') ? 1 : 0;
 			
 			gads_save();
 		}
-		
+
 		print $this->locale_xhtml('intro');
-		
-		ptln("<form action=\"" . wl($ID) . "\" method=\"post\">");
-		ptln('  <input type="hidden" name="do"   value="admin" />');
-		ptln('  <input type="hidden" name="page" value="' . $this->getPluginName() . '" />');
-		ptln('  <input type="hidden" name="cmd[googleads]" value="true" />');
-		print '<center><table class="inline">';
-		print '	<tr><th> ' . $this->getLang('gads_item_type') . ' </th><th> ' . $this->getLang('gads_item_option') . ' </th></tr>';
-		print '	<tr><td> ' . $this->getLang('gads_googleads_code') . ' </td><td><TEXTAREA rows="15" cols="40" name="googleads[code]">' . stripslashes($gads_settings['code']) . '</TEXTAREA></td></tr>';
-		print '	<tr><td> ' . $this->getLang('gads_dont_count_admin') . ' </td><td><input type="checkbox" name="googleads[dontcountadmin]" ' . $gads_settings['dontcountadmin'] . '/></td></tr>';
-		print '	<tr><td> ' . $this->getLang('gads_dont_count_manager') . ' </td><td><input type="checkbox" name="googleads[dontcountmanager]" ' . $gads_settings['dontcountmanager'] . '/></td></tr>';
-		print '	<tr><td> ' . $this->getLang('gads_dont_count_users') . ' </td><td><input type="checkbox" name="googleads[dontcountusers]" ' . $gads_settings['dontcountusers'] . '/></td></tr>';
-		print '</table>';
-		print '<br />';
-		print '<p><input type="submit" value="' . $this->getLang('gads_save') . '"></p></center>';
-		print '</form>';
+		print $this->getForm();
+		print '<br/><br/>';
+		print $this->locale_xhtml('outtro');
 	}
+
+	protected function getIsValueOn($map, $key)
+	{
+		$result = false;
+		
+		if ($map != null && array_key_exists($key, $map))
+		{
+			$result = $map[$key] == 1 || $map[$key] === 'on' || $map[$key] === 'checked';
+		}
+
+		return $result;
+	}
+
+    /**
+     * Create the preference form
+     *
+     * @return string
+     */
+    protected function getForm()
+    {
+        global $ID;
+		global $gads_settings;
+
+        $form = new \dokuwiki\Form\Form([
+            'method' => 'POST',
+            'action' => wl($ID, ['do' => 'admin', 'page' => $this->getPluginName(), 'cmd[googleads]' => 'true'], false, '&')
+        ]);
+        $form->addFieldsetOpen($this->getLang('components'));
+
+		$ta = $form->addTextarea('googleads[code]', $this->getLang('gads_googleads_code'));
+
+		if ($gads_settings != null && array_key_exists('code', $gads_settings))
+		{
+			$ta->val(stripslashes($gads_settings['code']));
+		}
+
+		$cb = $form->addCheckbox("googleads[dontcountadmin]", $this->getLang('gads_dont_count_admin'))->useInput(false)->addClass('block');
+		if ($this->getIsValueOn($gads_settings, 'dontcountadmin')) {
+			$cb->attr('checked', 'checked');
+		}
+
+		$cb = $form->addCheckbox("googleads[dontcountmanager]", $this->getLang('gads_dont_count_manager'))->useInput(false)->addClass('block');
+		if ($this->getIsValueOn($gads_settings, 'dontcountmanager')) {
+			$cb->attr('checked', 'checked');
+		}
+
+		$cb = $form->addCheckbox("googleads[dontcountusers]", $this->getLang('gads_dont_count_users'))->useInput(false)->addClass('block');
+		if ($this->getIsValueOn($gads_settings, 'dontcountusers')) {
+			$cb->attr('checked', 'checked');
+		}
+
+        $form->addButton('save', $this->getLang('gads_save'));
+        return $form->toHTML();
+    }
+
 }
 
