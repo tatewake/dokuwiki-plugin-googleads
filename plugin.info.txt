@@ -2,6 +2,6 @@ base    googleads
 author  Terence J. Grant
 email   tjgrant@tatewake.com
 date    2020-09-15
-name    Google AdSense Plugin 1.0.0
+name    Google AdSense Plugin 1.0.1
 desc    Plugin to embed Google AdSense code in your site.
 url     https://www.dokuwiki.org/plugin:googleanalytics
