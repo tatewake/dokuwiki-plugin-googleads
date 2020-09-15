@@ -1,0 +1,9 @@
+===== For template developers =====
+
+You can insert the above code and make your template "Google AdSense Ready", even if your users do not use Google AdSense (or have this plugin.)
+
+===== Support =====
+
+For further support or discussion, please see the official plugin page [[doku>plugin:googleads|here]].
+
+If you find this plugin useful, please consider supporting the project via [[http://tjgrant.com/wiki/donate|Donations]] or [[https://github.com/sponsors/tatewake|Sponsorships]]; thank you!

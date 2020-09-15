@@ -1,17 +1,21 @@
-====== GoogleAds ======
+====== Google AdSense for DokuWiki ======
 
-This plugin allows you to include [[wp>Adsense|Google Adsense]] advertisings into your wiki page.
+===== About =====
 
-To use it, you'll have to insert the following code into your template:
+This tool allows you to set a code for use with [[https://en.wikipedia.org/wiki/Google_AdSense|Google AdSense]], which allows you to put targeted advertisements on your site.
 
-<code php>
-<?php
+===== Setup =====
+
+The plugin also exports a function for use with your template, so you will have to insert the following code into your template's **main.php**, somewhere inside of the ''<head></head>'' tags.
+
+<code php><?php
 if (file_exists(DOKU_PLUGIN.'googleads/code.php')) include_once(DOKU_PLUGIN.'googleads/code.php');
 if (function_exists('gads_code')) gads_code();
-?>
-</code>
+?></code>
 
 **Note**: Inserting the code above is **required**, not optional.
 
-Please set the following options...
+===== Configure =====
+
+If you're ready, you can set your configuration below:
 
