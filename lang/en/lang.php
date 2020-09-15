@@ -25,4 +25,3 @@ $lang['gads_dont_count_admin'] = 'Don\'t display ads for superusers';
 $lang['gads_dont_count_manager'] = 'Don\'t display ads for managers';
 $lang['gads_dont_count_users'] = 'Don\'t display ads for logged in users';
 $lang['gads_save'] = 'Save';
-
